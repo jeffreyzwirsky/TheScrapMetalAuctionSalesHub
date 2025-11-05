@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h1>Your Products on Sale</h1>
+<ul class="list-group">
+    {% for product in products_on_sale %}
+    <li class="list-group-item">
+        <div class="d-flex align-items-center">
+            {% if product.images.first %}
+            <img src="{{ product.images.first.image.url }}" alt="{{ product.title }}" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% else %}
+            <img src="{% static 'images/noimages.jpg' %}" alt="No image available" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% endif %}
+            <a href="{% url 'product_detail' pk=product.id %}">{{ product.title }}</a>
+            - ${{ product.current_bid }}
+        </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No products on sale.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+{

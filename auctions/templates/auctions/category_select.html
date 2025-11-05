@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Category</title>
+</head>
+<body>
+    <h1>Select a Category</h1>
+
+    <form method="get" action="{% url 'product_create_with_category' category='category_name' %}">
+        <label for="category">Choose a category:</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+            <option value="">--- Select a Category ---</option>
+            {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</body>
+
+{% endblock %}

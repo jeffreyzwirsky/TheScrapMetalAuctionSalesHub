@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h1>Your Submitted Bids</h1>
+<ul class="list-group">
+    {% for bid in bids_submitted %}
+    <li class="list-group-item">
+        <div class="d-flex align-items-center">
+            {% if bid.product.images.first %}
+            <img src="{{ bid.product.images.first.image.url }}" alt="{{ bid.product.title }}" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% else %}
+            <img src="{% static 'images/noimages.jpg' %}" alt="No image available" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% endif %}
+            <a href="{% url 'product_detail' pk=bid.product.id %}">{{ bid.product.title }}</a>
+            - ${{ bid.product.current_bid }}
+        </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No bids submitted.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
+
+
+
+
