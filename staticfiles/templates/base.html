@@ -1,0 +1,70 @@
+<!-- SMASH Marketplace - Base Template -->
+<!-- Scrap Metal Auction Sales Hub -->
+<!-- File: static/templates/base.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMASH - Scrap Metal Auction Sales Hub. Buy and sell catalytic converters online.">
+    <title>{% block title %}SMASH Marketplace - Catalytic Converter Auctions{% endblock %}</title>
+    
+    <!-- SMASH Styles -->
+    <link rel="stylesheet" href="{% static 'css/smash-styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="smash-navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <img src="{% static 'images/smash-logo.png' %}" alt="SMASH Logo">
+                <span class="navbar-brand">SMASH</span>
+            </div>
+            
+            <ul class="navbar-menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'sale_list' %}">Active Sales</a></li>
+                <li><a href="{% url 'product_list' %}">Browse Cats</a></li>
+                
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'product_create' %}">Sell</a></li>
+                    <li><a href="{% url 'logout' %}">Logout ({{ user.username }})</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="smash-footer">
+        <p class="footer-tagline">"Let us smash profits back into your business!"</p>
+        <p class="footer-copyright">
+            &copy; 2025 SMASH - Scrap Metal Auction Sales Hub. All rights reserved.
+        </p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
