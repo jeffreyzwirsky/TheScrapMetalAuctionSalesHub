@@ -1,75 +1,70 @@
+<!-- SMASH Marketplace - Base Template -->
+<!-- Scrap Metal Auction Sales Hub -->
+<!-- File: static/templates/base.html -->
+
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Online Auction Hub{% endblock %}</title>
-    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Custom styles -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta name="description" content="SMASH - Scrap Metal Auction Sales Hub. Buy and sell catalytic converters online.">
+    <title>{% block title %}SMASH Marketplace - Catalytic Converter Auctions{% endblock %}</title>
+    
+    <!-- SMASH Styles -->
+    <link rel="stylesheet" href="{% static 'css/smash-styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">AuctionHub</a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product_list' %}">Auctions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product_create' %}">Create Product</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user_dashboard' %}">User Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                       {% if user.is_authenticated %}
-                           <span class="nav-link username-gap bold-username" style="margin-left: 50px;, font-weight:bold">{{ user.username }}</span>
-                       {% endif %}
-                    </li>
-                    <li class="nav-item">
-                        {% if user.is_authenticated %}
-                          <a class="nav-link" href="#" onclick="event.preventDefault();     document.getElementById('logout-form').submit();">Logout</a>
-                                <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
-                                    {% csrf_token %}
-                                </form>
-                        {% else %}
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                            <a class="nav-link" href="{% url 'signup' %}">Signup</a>
-
-                        {% endif %}
-
-                    </li>
-                </ul>
+    <!-- Navigation Bar -->
+    <nav class="smash-navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <img src="{% static 'images/smash-logo.png' %}" alt="SMASH Logo">
+                <span class="navbar-brand">SMASH</span>
             </div>
+            
+            <ul class="navbar-menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'sale_list' %}">Active Sales</a></li>
+                <li><a href="{% url 'product_list' %}">Browse Cats</a></li>
+                
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'product_create' %}">Sell</a></li>
+                    <li><a href="{% url 'logout' %}">Logout ({{ user.username }})</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        {% block content %}
-        <a href="{% url 'product_list' %}">All Products</a>
-        {% endblock %}
-    </div>
-
-    <footer class="custom-footer text-center py-4">
-        <div class="container">
-            <p class="mb-0">© 2024 All rights reserved.</p>
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            {{ message }}
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="smash-footer">
+        <p class="footer-tagline">"Let us smash profits back into your business!"</p>
+        <p class="footer-copyright">
+            &copy; 2025 SMASH - Scrap Metal Auction Sales Hub. All rights reserved.
+        </p>
     </footer>
 
-    <div class="auth-buttons">
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

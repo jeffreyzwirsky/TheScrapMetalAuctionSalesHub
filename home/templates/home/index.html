@@ -1,0 +1,130 @@
+<!-- SMASH Marketplace - Homepage -->
+<!-- File: home/templates/home/index.html -->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SMASH - Scrap Metal Auction Sales Hub{% endblock %}
+
+{% block content %}
+<!-- Hero Section - "Are you ready?" -->
+<section class="smash-hero">
+    <img src="{% static 'images/smash-logo.png' %}" alt="SMASH Logo" class="hero-logo">
+    
+    <h1 class="hero-title">Are you ready?</h1>
+    <p class="hero-subtitle">Click below to choose: SMASH or PASS</p>
+    <p class="hero-tagline">"Let us smash profits back into your business!"</p>
+    
+    <div style="display: flex; gap: 24px; margin-top: 32px;">
+        <a href="{% url 'sale_list' %}" class="smash-button">
+            SMASH OR PASS?
+        </a>
+    </div>
+    
+    <div style="margin-top: 48px; text-align: center;">
+        <p style="font-size: 16px; color: var(--smash-text-gray);">
+            Professional landing micro-prompt? 
+            <a href="mailto:info@smashscrap.ca" style="color: var(--smash-red);">Contact us</a>
+        </p>
+    </div>
+</section>
+
+<!-- Featured Sales Section -->
+<section style="padding: 64px 24px; background: var(--smash-dark-gray);">
+    <div class="container">
+        <h2 style="text-align: center; color: var(--smash-cream); font-size: 42px; margin-bottom: 48px;">
+            Active LOTs
+        </h2>
+        
+        <div class="lot-grid">
+            {% for sale in featured_sales %}
+            <div class="lot-card" onclick="window.location.href='{% url 'sale_detail' sale.pk %}'">
+                <div class="lot-header">
+                    <div class="lot-number">{{ sale.lot_number }}</div>
+                    <div class="lot-status">{{ sale.get_status_display }}</div>
+                </div>
+                
+                <h3 class="lot-title">{{ sale.title }}</h3>
+                
+                <div class="lot-details">
+                    <div class="lot-detail-item">
+                        <span>📍 Location:</span>
+                        <span>{{ sale.zip_code }}</span>
+                    </div>
+                    <div class="lot-detail-item">
+                        <span>📦 Units:</span>
+                        <span>{{ sale.unit_count }}</span>
+                    </div>
+                    <div class="lot-detail-item">
+                        <span>⏰ Due Date:</span>
+                        <span>{{ sale.bid_due_date|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="lot-detail-item">
+                        <span>👤 Seller Type:</span>
+                        <span>{{ sale.get_seller_type_display }}</span>
+                    </div>
+                </div>
+                
+                <div class="lot-footer">
+                    <div>
+                        <div style="font-size: 12px; color: var(--smash-text-gray);">Current Bid</div>
+                        <div class="lot-bid">${{ sale.current_sale_bid|floatformat:2 }}</div>
+                    </div>
+                    <button class="lot-watch-btn" onclick="event.stopPropagation();">
+                        Watch
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 64px; color: var(--smash-text-gray);">
+                <p style="font-size: 24px; margin-bottom: 16px;">No active sales yet</p>
+                <p>Check back soon for new catalytic converter auctions!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if featured_sales %}
+        <div style="text-align: center; margin-top: 48px;">
+            <a href="{% url 'sale_list' %}" class="smash-button-secondary" style="display: inline-block; padding: 16px 40px;">
+                View All Sales
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section style="padding: 64px 24px; background: var(--smash-black);">
+    <div class="container">
+        <h2 style="text-align: center; color: var(--smash-cream); font-size: 42px; margin-bottom: 48px;">
+            How SMASH Works
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
+            <div style="text-align: center; padding: 32px; background: var(--smash-dark-gray); border-radius: 12px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                <h3 style="color: var(--smash-red); margin-bottom: 12px;">1. Browse LOTs</h3>
+                <p style="color: var(--smash-text-gray);">
+                    Explore active sales of catalytic converters grouped by location and seller type
+                </p>
+            </div>
+            
+            <div style="text-align: center; padding: 32px; background: var(--smash-dark-gray); border-radius: 12px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">💰</div>
+                <h3 style="color: var(--smash-red); margin-bottom: 12px;">2. Bid Item-by-Item</h3>
+                <p style="color: var(--smash-text-gray);">
+                    Appraise each catalytic converter individually with our 30-category system
+                </p>
+            </div>
+            
+            <div style="text-align: center; padding: 32px; background: var(--smash-dark-gray); border-radius: 12px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+                <h3 style="color: var(--smash-red); margin-bottom: 12px;">3. Win & Arrange Pickup</h3>
+                <p style="color: var(--smash-text-gray);">
+                    Win the sale and coordinate pickup directly with the seller
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
