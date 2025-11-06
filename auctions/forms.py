@@ -1,86 +1,197 @@
+# SMASH Marketplace - Forms
+# Scrap Metal Auction Sales Hub
+# File: auctions/forms.py
+# REPLACE your existing forms.py with this complete file
+
 from django import forms
-from .models import *
+from .models import Product, Bid, Category, Package, Sale
 
 
 class ProductForm(forms.ModelForm):
-    image = forms.FileField(widget=forms.ClearableFileInput, required=False)
-    end_time = forms.DateTimeField(
-        widget=forms.DateInput(attrs={'type': 'date'}),
+    """Form for creating/editing catalytic converters"""
+    
+    image = forms.FileField(
+        widget=forms.ClearableFileInput, 
+        required=False,
+        help_text="Upload photo of the catalytic converter"
     )
-    category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.HiddenInput())
-
+    
     class Meta:
         model = Product
-        fields = ['title', 'description', 'starting_bid', 'end_time', 'category']
-
+        fields = [
+            'unique_unit_id',
+            'title', 
+            'description', 
+            'category',
+            'package',
+            'fullness',
+            'appraisal_category',
+            'appraisal_value',
+            'starting_price',
+            'image'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'Describe the catalytic converter (make, model, year, condition)'
+            }),
+            'unique_unit_id': forms.TextInput(attrs={
+                'placeholder': 'e.g., CAT-2025-001'
+            }),
+            'starting_price': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+            'appraisal_value': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+        }
+        labels = {
+            'unique_unit_id': 'Unit ID',
+            'starting_price': 'Starting Price ($)',
+            'appraisal_value': 'Appraisal Value ($/lb)',
+        }
+    
     def clean_image(self):
+        """Validate image upload"""
         image = self.cleaned_data.get('image')
-        if self.instance.pk and self.instance.images.exists() and image:
-            raise forms.ValidationError("You can't add images when one already exists.")
+        if self.instance.pk and self.instance.additional_images.exists() and image:
+            raise forms.ValidationError("Maximum images reached for this product.")
         return image
 
 
-class ArtForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Art
-        fields = ProductForm.Meta.fields + ['artist_name', 'art_type', 'dimensions']
+class BidForm(forms.ModelForm):
+    """Form for placing bids on catalytic converters"""
+    
+    class Meta:
+        model = Bid
+        fields = [
+            'amount',
+            'appraisal_category',
+            'appraisal_value',
+            'fullness_applied'
+        ]
+        widgets = {
+            'amount': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0',
+                'class': 'bid-amount-input',
+                'placeholder': 'Enter bid amount'
+            }),
+            'appraisal_value': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0'
+            }),
+        }
+        labels = {
+            'amount': 'Bid Amount ($)',
+            'appraisal_category': 'Appraisal Category',
+            'appraisal_value': 'Base Value ($/lb)',
+            'fullness_applied': 'Fullness Level'
+        }
 
 
-class BookForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Book
-        fields = ProductForm.Meta.fields + ['author', 'genre', 'isbn', 'condition']
+class PackageForm(forms.ModelForm):
+    """Form for creating/editing packages"""
+    
+    class Meta:
+        model = Package
+        fields = [
+            'name',
+            'status',
+            'final_weight',
+            'notes'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'placeholder': 'e.g., November 2025 Batch 1'
+            }),
+            'final_weight': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+            'notes': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Internal notes about this package'
+            }),
+        }
+        labels = {
+            'final_weight': 'Total Weight (lbs)',
+        }
 
 
-class ComicForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Comic
-        fields = ProductForm.Meta.fields + ['issue_number', 'publisher', 'condition']
+class SaleForm(forms.ModelForm):
+    """Form for creating/editing sales (LOTs)"""
+    
+    class Meta:
+        model = Sale
+        fields = [
+            'lot_number',
+            'title',
+            'description',
+            'packages',
+            'zip_code',
+            'unit_count',
+            'total_weight',
+            'seller_type',
+            'bid_due_date',
+            'pickup_instructions',
+            'status'
+        ]
+        widgets = {
+            'lot_number': forms.TextInput(attrs={
+                'placeholder': 'e.g., LOT-2025-001'
+            }),
+            'title': forms.TextInput(attrs={
+                'placeholder': 'e.g., Thunder Bay Premium Cats - November 2025'
+            }),
+            'description': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'Detailed description of this sale'
+            }),
+            'zip_code': forms.TextInput(attrs={
+                'placeholder': 'e.g., P7A1A1'
+            }),
+            'unit_count': forms.NumberInput(attrs={
+                'min': '0'
+            }),
+            'total_weight': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+            'bid_due_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local'
+            }),
+            'pickup_instructions': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Instructions for buyers on how to arrange pickup'
+            }),
+            'packages': forms.CheckboxSelectMultiple(),
+        }
+        labels = {
+            'lot_number': 'LOT Number',
+            'unit_count': 'Total Number of Converters',
+            'total_weight': 'Total Weight (lbs)',
+            'bid_due_date': 'Bidding Deadline',
+        }
 
 
-class JewelleryForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Jewellery
-        fields = ProductForm.Meta.fields + ['jewellery_type', 'material', 'size']
-
-
-class FashionForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Fashion
-        fields = ProductForm.Meta.fields + ['fashion_type', 'size', 'condition']
-
-
-class MusicForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Music
-        fields = ProductForm.Meta.fields + ['artist_name', 'format', 'genre']
-
-
-class MovieForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Movie
-        fields = ProductForm.Meta.fields + ['director', 'format', 'genre']
-
-
-class SportForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Sport
-        fields = ProductForm.Meta.fields + ['sport_type', 'sport_name', 'condition']
-
-
-class ElectronicForm(ProductForm):
-    class Meta(ProductForm.Meta):
-        model = Electronic
-        fields = ProductForm.Meta.fields + ['brand', 'model', 'condition']
-
-
-form_mapping = {
-            'Art': ArtForm,
-            'Music': MusicForm,
-            'Comic': ComicForm,
-            'Book': BookForm,
-            'Jewellery': JewelleryForm,
-            'Fashion': FashionForm,
-            'Movie': MovieForm,
-            'Sport': SportForm,
-            'Electronic': ElectronicForm}
+class QuickBidForm(forms.Form):
+    """Quick bid form for item-by-item bidding interface"""
+    
+    bid_amount = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'quick-bid-input',
+            'placeholder': '0.00',
+            'readonly': True  # Calculated automatically
+        }),
+        label='Calculated Bid'
+    )
