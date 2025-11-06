@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+{% for message in messages %}
+    {% if message.tags == 'error' %}
+        <div class="alert alert-warning">{{ message }}</div>
+    {% elif message.tags == 'success' %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+{% endfor %}
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" class="img-fluid" alt="{{ product.title }}">
+            {% else %}
+                <img src="{% static 'images/noimages.jpg' %}" class="card-img-top" alt="No image available">  <!-- Default image -->
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1>{{ product.title }}</h1>
+            <p class="lead">{{ product.description }}</p>
+            <p><strong>Starting Bid:</strong> ${{ product.starting_bid }}</p>
+            {% if product.current_bid.exists %}
+            <p><strong>Current Bid:</strong> ${{ product.current_bid }}</p>
+            {% else %}
+            <p><strong>Current Bid:</strong>{{ product.current_bid }}</p>
+            {% endif %}
+            <p><strong>End Time:</strong> {{ product.end_time }}</p>
+            <p><strong>Seller:</strong> {{ product.seller.username }}</p>
+            <p><strong>Category:</strong> {{ product.category.name }}</p>
+
+            {% if product.category.name == 'Art' %}
+                <h3>Art Details</h3>
+                <p><strong>Artist:</strong> {{ product.artist_name }}</p>
+                <p><strong>Art Type:</strong> {{ product.art_type }}</p>
+                <p><strong>Dimensions:</strong> {{ product.dimensions }}</p>
+            {% elif product.category.name == 'Book' %}
+                <h3>Book Details</h3>
+                <p><strong>Author:</strong> {{ product.author }}</p>
+                <p><strong>Genre:</strong> {{ product.genre }}</p>
+                <p><strong>ISBN:</strong> {{ product.isbn }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            {% elif product.category.name == 'Comic' %}
+                <h3>Comic Details</h3>
+                <p><strong>Publisher:</strong> {{ product.publisher }}</p>
+                <p><strong>Issue Number:</strong> {{ product.issue_number }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            {% elif product.category.name == 'Jewellery' %}
+                <h3>Jewellery Details</h3>
+                <p><strong>Jewellery Type:</strong> {{ product.jewellery_type }}</p>
+                <p><strong>Material:</strong> {{ product.material }}</p>
+                <p><strong>Size:</strong> {{ product.size }}</p>
+            {% elif product.category.name == 'Fashion' %}
+                <h3>Fashion Details</h3>
+                <p><strong>Fashion Type:</strong> {{ product.fashion_type }}</p>
+                <p><strong>Size:</strong> {{ product.size }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            {% elif product.category.name == 'Music' %}
+                <h3>Music Details</h3>
+                <p><strong>Artist Name:</strong> {{ product.artist_name }}</p>
+                <p><strong>Genre:</strong> {{ product.genre }}</p>
+                <p><strong>Format:</strong> {{ product.format }}</p>
+            {% elif product.category.name == 'Movie' %}
+                <h3>Movie Details</h3>
+                <p><strong>Director:</strong> {{ product.director }}</p>
+                <p><strong>Format:</strong> {{ product.format }}</p>
+                <p><strong>Genre:</strong> {{ product.genre }}</p>
+            {% elif product.category.name == 'Sport' %}
+                <h3>Sport Item Details</h3>
+                <p><strong>Sport Type:</strong> {{ product.sport_type }}</p>
+                <p><strong>Sport Name:</strong> {{ product.sport_name }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            {% elif product.category.name == 'Electronic' %}
+                <h3>Electronic Details</h3>
+                <p><strong>Brand:</strong> {{ product.brand }}</p>
+                <p><strong>Model:</strong> {{ product.model }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            {% endif %}
+
+        {% if request.user.is_authenticated %}
+            {% if request.user != product.seller  %}
+            <form method="post" action="{% url 'place_bid' product.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="bid_amount">Your Bid:</label>
+                    <input type="number" class="form-control" id="bid_amount" name="bid_amount" step="0.01"  min="{% if product.current_bid is not None %}{{ product.current_bid }}{% else %}{{ product.starting_bid }}{% endif %}"  required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Place Bid</button>
+            </form>
+            {% else %}
+            <p>You cannot bid on your own product.</p>
+            {% endif %}
+        {% else %}
+            <p>Please log in to place a bid.</p>
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+    {% if request.user == product.seller and not product.bids.exists %}
+        <a href="{% url 'product_update' product.pk %}" class="btn btn-primary">Update Product</a>
+    {% endif %}
+</div>
+
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+    {% if request.user == product.seller and not product.bids.exists %}
+        <a href="{% url 'product_delete' product.pk %}" class="btn btn-primary">Delete Product</a>
+    {% endif %}
+</div>
+
+
+<div class="text-center" style="margin-top: 20px;">
+<form method="post" action="{% url 'toggle_favorite' product.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+        {% if is_favorited  %}
+            Remove from Favorites
+        {% else %}
+            Add to Favorites
+        {% endif %}
+    </button>
+</form>
+</div>
+
+
+{% endblock %}
+
+

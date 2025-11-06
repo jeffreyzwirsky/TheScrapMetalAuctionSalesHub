@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            width: calc(30% - 40px);
+            text-align: center;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .card a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Your Dashboard</h1>
+    <div class="container">
+        <div class="card">
+            <h3>Your Favorites</h3>
+            <i class="bi bi-star-fill"></i>
+            <p>View all your favorite products.</p>
+            <a href="{% url 'favorites' %}">View Favorites</a>
+        </div>
+        <div class="card">
+            <h3>Products on Sale</h3>
+            <i class="bi bi-hourglass-top"></i>
+            <p>Check out the products you have on sale.</p>
+            <a href="{% url 'products_on_sale' %}">View Products on Sale</a>
+        </div>
+        <div class="card">
+            <h3>Submitted Bids</h3>
+            <i class="bi bi-send-check-fill"></i>
+            <p>See the bids you have submitted.</p>
+            <a href="{% url 'submitted_bids' %}">View Submitted Bids</a>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

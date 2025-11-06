@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h1>Your Favorites</h1>
+<ul class="list-group">
+    {% for favorite in favorites %}
+    <li class="list-group-item">
+        <div class="d-flex align-items-center">
+            {% if favorite.product.images.first %}
+            <img src="{{ favorite.product.images.first.image.url }}" alt="{{ favorite.product.title }}" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% else %}
+            <img src="{% static 'images/noimages.jpg' %}" alt="No image available" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+            {% endif %}
+            <a href="{% url 'product_detail' pk=favorite.product.id %}">{{ favorite.product.title }}</a>
+            - ${{ favorite.product.current_bid }}
+        </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No products on favorites.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,127 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Light background */
+}
+
+.navbar {
+    margin-bottom: 20px; /* Space below the navbar */
+    background-color: #f0f8ff !important;
+
+}
+
+
+footer {
+    background-color: #f0f8ff !important; /* Footer background */
+    color: #6c757d; /* Footer text color */
+}
+
+.card {
+    margin: 20px 0; /* Space around cards */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Primary button color */
+    border-color: #007bff; /* Button border color */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker on hover */
+    border-color: #0056b3; /* Darker border on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center; /* Center nav items on small screens */
+    }
+}
+.card-img-top {
+    height: 200px; /* Set a fixed height for product images */
+    object-fit: cover; /* This will crop the image to fit while maintaining aspect ratio */
+}
+
+.card-title {
+    font-size: 1.1rem; /* Adjust the title size as needed */
+}
+
+.card-text {
+    font-size: 0.9rem; /* Adjust the description text size */
+}
+.pagination {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.page-item {
+    margin: 0 2px;  /* Add some horizontal space between pagination items */
+}
+
+.page-link {
+    padding: 0.5rem 0.75rem;  /* Adjust padding if needed */
+}
+
+.error-message {
+    color: #ff0000; /* Red color for errors */
+    background-color: #ffe6e6; /* Light red background */
+    border: 1px solid #ff0000; /* Red border */
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.error-message a {
+    background-color: transparent; /* Remove background shading */
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+.error-message a:hover {
+    background-color: transparent; /* Ensure no background on hover */
+    text-decoration: underline; /* Underline on hover for clarity */
+}
+
+.error-message a {
+    display: block; /* Make each link a block element */
+    margin: 10px 0; /* Add vertical spacing between buttons */
+    width: 100%; /* Optional: make buttons full width */
+    text-align: center; /* Center the text in buttons */
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.product-item {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 200px; /* Fixed height for uniformity */
+}
+
+#search-input {
+    pointer-events: auto; /* Ensure pointer events are enabled */
+    position: relative; /* Ensure proper positioning */
+    z-index: 10; /* Bring the input above any overlapping elements */
+}
+
+#search-form {
+    position: relative; /* Ensure the form has a positioning context */
+    z-index: 5; /* Adjust if necessary */
+}
+
+.bold-username {
+    font-weight: bold !important; /* Use !important to ensure it takes precedence */
+}
+

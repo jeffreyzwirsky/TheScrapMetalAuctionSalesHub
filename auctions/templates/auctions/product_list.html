@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ category|default:"All" }} Products</h1>
+
+
+
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="category">Category:</label>
+                <select name="category" id="category" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="min_price">Min Price:</label>
+                <input type="number" name="min_price" id="min_price" class="form-control" value="{{ request.GET.min_price }}">
+            </div>
+            <div class="col-md-2">
+                <label for="max_price">Max Price:</label>
+                <input type="number" name="max_price" id="max_price" class="form-control" value="{{ request.GET.max_price }}">
+            </div>
+            <div class="col-md-3">
+                <label for="sort">Sort by:</label>
+                <select name="sort" id="sort" class="form-control">
+                    <option value="">Default</option>
+                    <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price (Low to High)</option>
+                    <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price (High to Low)</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary form-control">Apply Filters</button>
+            </div>
+        </div>
+    </form>
+
+    <form id="search-form" method="get">
+        <input type="text" id="search-input" name="search" placeholder="Search products..." class="form-control" value="{{ request.GET.search }}">
+        <input type="hidden" name="page" value="{{ request.GET.page|default:1 }}">
+    </form>
+
+    <div id="product-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    {% for product in products %}
+    <div class="col product-item">
+        <div class="card h-100">
+             {% if product.images.all %}
+                    <img src="{{ product.images.first.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                {% else %}
+                    <img src="{% static 'images/noimages.jpg' %}" class="card-img-top" alt="No image available">  <!-- Default image -->
+                {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text">{{ product.description|truncatewords:20 }}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Starting Bid:</strong> ${{ product.starting_bid }}</li>
+                {% if product.current_bid.exists %}
+                <li class="list-group-item"><strong>Current Bid:</strong> ${{ product.current_bid }}</li>
+                {% else %}
+                <li class="list-group-item"><strong>Current Bid:</strong> {{ product.current_bid }}</li>
+                {% endif %}
+                <li class="list-group-item"><strong>End Time:</strong> {{ product.end_time|date:"F d, Y H:i" }}</li>
+            </ul>
+            <div class="card-footer">
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No products available matching your criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+             <div id="product-count" class="row mb-2 mt-5">
+                <div class="col-12">
+                    <p class="text-center">
+                        Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ paginator.count }} products
+                    </p>
+                </div>
+            </div>
+
+   {% if is_paginated %}
+<nav id="pagination" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }} <span class="sr-only">(current)</span></span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const productList = document.getElementById('product-list');
+    const productCount = document.getElementById('product-count');
+    const pagination = document.getElementById('pagination');
+
+    let currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+
+    searchInput.addEventListener('input', function() {
+        const searchQuery = searchInput.value;
+
+        if (searchQuery) {
+            performSearch(searchQuery);
+        } else {
+            // Clear the search and go back to the original page
+            window.history.pushState({}, '', `${window.location.pathname}?page=${currentPage}`);
+            location.reload(); // Reload to go back to the original products
+        }
+    });
+
+    function performSearch(query) {
+        const url = `${window.location.pathname}?search=${encodeURIComponent(query)}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Update product list
+                productList.innerHTML = doc.getElementById('product-list').innerHTML;
+
+                // Update product count
+                const totalResults = doc.getElementById('product-count').textContent;
+                productCount.innerHTML = totalResults;
+
+                if (totalResults <= 20) {
+                    pagination.style.display = 'none';
+                } else {
+                    pagination.style.display = 'block';
+                }
+
+                // Update pagination
+                const newPagination = doc.getElementById('pagination').innerHTML;
+                pagination.innerHTML = newPagination;
+
+                // Update the URL without reloading the page
+                window.history.pushState({}, '', url);
+            });
+    }
+
+    // Handle back and forward navigation
+    window.addEventListener('popstate', function() {
+        location.reload();
+    });
+});
+</script>
+
+
+{% endblock %}
+

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    {% if form.errors %}
+    <div class="errors">
+        <h3>Please correct the following errors:</h3>
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+
+    {% for message in messages %}
+    <div class="alert alert-warning">{{ message }}</div>
+    {% endfor %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if is_update %}Update Product{% else %}Create Product{% endif %}</title>
+    <style>
+        #image-preview img,
+        .existing-image img {
+            width: 100px;  /* Set the desired width */
+             height: auto;  /* Maintain aspect ratio */
+            margin: 5px;   /* Add some margin */
+        }
+    </style>
+</head>
+<body>
+    <h1>{% if is_update %}Update Product{% else %}Create a New Product{% endif %}</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Render the dynamic form -->
+
+       <div id="image-preview"></div>  <!-- Container for image previews -->
+
+        {% if is_update %}
+            <h3>Existing Images:</h3>
+            <div class="existing-image">
+                {% for image in product.images.all %}
+                    <img src="{{ image.image.url }}" alt="Product Image">
+                    <button type="submit" name="delete_image" value="{{ image.id }}">Delete Image</button>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit">{% if is_update %}Update Product{% else %}Create Product{% endif %}</button>
+    </form>
+
+
+</body>
+
+
+
+<script>
+    document.querySelector('input[name="image"]').addEventListener('change', function(event) {
+        const preview = document.getElementById('image-preview');
+        preview.innerHTML = ''; // Clear previous previews
+
+        const files = event.target.files; // Get the list of files
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result; // Set the image source to the file data
+                preview.appendChild(img); // Append the image to the preview container
+            }
+            reader.readAsDataURL(file); // Read the file as a data URL
+        }
+    });
+</script>
+
+{% endblock %}
+
